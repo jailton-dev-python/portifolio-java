@@ -31,11 +31,9 @@ public class Category implements Serializable {
 	public Category() {
 	}
 
-	public Category(Long id, String name, Set<Product> products) {
-		super();
+	public Category(Long id, String name) {
 		this.id = id;
 		this.name = name;
-		this.products = products;
 	}
 
 	public Long getId() {
