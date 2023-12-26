@@ -1,0 +1,52 @@
+API RESTful seguindo o modelo de maturidade de Leonard Richardson onde foi definido 4 niveis para definir uma api como restful
+	Primeiro nivel é que a api utilize do protocolo http(nivel 0)	@PostMapping("/products")
+	Segundo nivel é que ela tenha recursos bem definidos e o correto uso das URIs, ou seja na hora da definição de cada uma das uris
+use substantivos para que fique dentro dos padrões.(nivel 1)	"/products"
+	Terceiro utilize os métodos http de forma semântica ou seja se vai salvar use post se vai buscar dados use get, se vai atualizar
+use o put e tambem ter os retornos adequados (nivel 2)	@PostMapping
+	Quarto apresentar hipermidias, navegabilidade entre os recursos, pra isso use o hateos
+
+Primeiro
+	Configurar a base de dados	
+	No arquivo application.properties setar as configs abaixo:	
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/products-api
+spring.datasource.username=postgres
+spring.datasource.password=123456
+spring.jpa.hibernate.ddl-auto=update // isso aqui é pra quando rodar o app ele atualizar a base automaticamente com os objetos mapeados
+
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true // habilitado pra não criar logs do hibernate
+
+Segundo 
+	Implementar o models
+	Pacote models - classe ProductModel
+
+Terceiro 
+	Criar o repository
+	Pacote repositories - interface ProductRepository
+
+Quarto
+	Criar o controller
+	Pacote controllers - 
+	@Controller e @RestController(é especifico quando se quer implementar uma APIRest)
+
+Quinto
+	Criar o dto
+	Pacote dtos
+
+	Records são imutáveis, possuem apenas getters não possuem setters, seus atributos por default são privates e final
+
+	@NotBlank String name, @NotNull BigDecimal value -> não aceita branco/vazio nem null pra string e nem nulo pra numerico
+
+	Nisso public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductRecordDto productRecordDto)	
+o @Valid só funciona se isso 	{@NotBlank String name, @NotNull BigDecimal value	 estiver definido
+
+	BeanUtils.copyProperties(productRecordDto, productModel); isso é para converter de dto para model lembrando que o dto é 
+o dado recebido no corpo da requisição http enviada via post e ai o que persiste no banco é o model.
+
+	return ResponseEntity.status(HttpStatus.CREATED).body(productRepository.save(productModel)); 	 é o retorno do método
+construido em duas partes	 primeira: ResponseEntity.status(HttpStatus.CREATED) informa o cliente que o recurso foi criado no banco de dados
+body(productRepository.save(productModel))	 segunda: mostrar no corpo da requisição o registro que foi gravado no banco
+
+Importante !!!
+Criar a camada Services é uma boa prática, para intermediar o controller com o repository
